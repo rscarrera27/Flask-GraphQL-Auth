@@ -1,4 +1,6 @@
 import datetime
+import time
+import uuid
 from jwt import algorithms, utils
 
 default_header = {
@@ -8,9 +10,6 @@ default_header = {
 
 
 def make_signature(header, payload, secret):
-    header = utils.base64url_encode(header)
-    payload = utils.base64url_encode(payload)
-
     segement = header+b'.'+payload
 
     HS256 = algorithms.get_default_algorithms()['HS256']
@@ -20,8 +19,28 @@ def make_signature(header, payload, secret):
     return signature
 
 
-def create_token(identity, exp, key, **claims):
-    pass
+def create_token(type, identity, exp, key, **claims):
+    now = int(time.time())
+    exp = int(datetime.timedelta(minutes=exp).total_seconds())
+    payload = dict(
+        type=type,
+        jti=uuid.uuid4(),
+        identity=identity,
+        nbf=now,
+        iat=now,
+        exp=now + exp
+    )
+
+    for key, value in claims.items():
+        payload.update({key: value})
+
+    header = utils.base64url_encode(default_header)
+    payload = utils.base64url_encode(payload)
+    signature = make_signature(header, payload, key)
+
+    token = header + b'.' + payload + b'.' + signature
+
+    return token
 
 
 def create_refresh_token(identity, exp, key, **user):
