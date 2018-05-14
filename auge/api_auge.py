@@ -47,7 +47,13 @@ def create_token(type, identity, exp, key, **claims):
 
 
 def create_refresh_token(identity, exp, key, **user):
-    pass
+    refresh_token = create_token(type='refresh',
+                                 identity=identity,
+                                 exp=exp,
+                                 key=key,
+                                 **user)
+
+    return refresh_token
 
 
 def create_access_token(identity, exp, key, **user):
