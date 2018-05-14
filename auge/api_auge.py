@@ -1,7 +1,9 @@
 import datetime
 import time
 import uuid
-from jwt import algorithms, utils
+import json
+from jwt import algorithms, utils, exceptions
+from .type_auge import TokenData
 
 default_header = {
   "alg": "HS256",
