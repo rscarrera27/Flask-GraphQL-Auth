@@ -36,9 +36,10 @@ def create_token(type, identity, exp, key, **claims):
     for key, value in claims.items():
         payload.update({key: value})
 
-    header = utils.base64url_encode(default_header)
-    payload = utils.base64url_encode(payload)
+    header = utils.base64url_encode(str(default_header).encode())
+    payload = utils.base64url_encode(str(payload).encode())
     signature = make_signature(header, payload, key)
+    signature= utils.base64url_encode(signature)
 
     token = header + b'.' + payload + b'.' + signature
 
