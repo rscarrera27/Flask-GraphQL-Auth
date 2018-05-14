@@ -57,7 +57,13 @@ def create_refresh_token(identity, exp, key, **user):
 
 
 def create_access_token(identity, exp, key, **user):
-    pass
+    access_token = create_token(type='access',
+                                identity=identity,
+                                exp=exp,
+                                key=key,
+                                **user)
+
+    return access_token
 
 
 def decode_token(token, secret):
