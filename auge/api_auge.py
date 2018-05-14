@@ -23,7 +23,7 @@ def make_signature(header, payload, secret):
 
 def create_token(type, identity, exp, key, **claims):
     now = int(time.time())
-    exp = int(datetime.timedelta(minutes=exp).total_seconds())
+    exp = int(exp.total_seconds())
     payload = dict(
         type=type,
         jti=uuid.uuid4(),
