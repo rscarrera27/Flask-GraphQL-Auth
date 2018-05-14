@@ -100,4 +100,24 @@ def decode_token(token, secret):
 
 
 def get_token(token, secret):
-    pass
+    header, payload = decode_token(token, secret)
+
+    return TokenData(header, payload)
+
+
+def get_access_token(token, secret):
+    token = TokenData(*decode_token(token, secret))
+
+    if TokenData.type is not 'access':
+        raise exceptions.InvalidTokenError('Not access token')
+
+    return token
+
+
+def get_refresh_token(token, secret):
+    token = TokenData(*decode_token(token, secret))
+
+    if TokenData.type is not 'refresh':
+        raise exceptions.InvalidTokenError('Not refresh token')
+
+    return token
