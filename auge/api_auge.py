@@ -67,7 +67,36 @@ def create_access_token(identity, exp, key, **user):
 
 
 def decode_token(token, secret):
-    pass
+
+    if type(token) is bytes:
+        token = token.decode()
+
+    bheader, bpayload, bsignature = token.split('.')
+    header = json.loads(bheader.decode())
+    payload = json.loads(bpayload.decode())
+
+    # claim check
+    payload_keys = list(payload.keys())
+    if 'jti' not in payload_keys:
+        raise exceptions.MissingRequiredClaimError('jti')
+    if 'exp' not in payload_keys:
+        raise exceptions.MissingRequiredClaimError('exp')
+    if 'type' not in payload_keys:
+        raise exceptions.MissingRequiredClaimError('type')
+    if 'identity' not in payload_keys:
+        raise exceptions.MissingRequiredClaimError('identity')
+    if 'iat' not in payload_keys:
+        raise exceptions.MissingRequiredClaimError('iat')
+
+    # signature compare
+    if bsignature is not make_signature(bheader, bpayload, secret):
+        raise exceptions.InvalidSignatureError('Invalid token signature')
+
+    # expire check
+    if payload['exp'] > int(time.time()):
+        raise exceptions.ExpiredSignatureError('Token has been expired')
+
+    return header, payload
 
 
 def get_token(token, secret):
