@@ -12,7 +12,7 @@ default_header = {
 
 
 def make_signature(header, payload, secret):
-    segement = header+b'.'+payload
+    segement = header + b'.' + payload
 
     HS256 = algorithms.get_default_algorithms()['HS256']
     key = HS256.prepare_key(secret)
@@ -24,20 +24,20 @@ def make_signature(header, payload, secret):
 def create_token(type, identity, exp, key, **claims):
     now = int(time.time())
     exp = int(exp.total_seconds())
-    payload = dict(
-        type=type,
-        jti=uuid.uuid4(),
-        identity=identity,
-        nbf=now,
-        iat=now,
-        exp=now + exp
-    )
+    payload = {
+        "type": type,
+        "jti": str(uuid.uuid4()),
+        "identity": identity,
+        "nbf": now,
+        "iat": now,
+        "exp": now + exp
+    }
 
     for key, value in claims.items():
         payload.update({key: value})
 
-    header = utils.base64url_encode(str(default_header).encode())
-    payload = utils.base64url_encode(str(payload).encode())
+    header = utils.base64url_encode(json.dumps(str(default_header)).encode())
+    payload = utils.base64url_encode(json.dumps(str(payload)).encode())
     signature = make_signature(header, payload, key)
     signature= utils.base64url_encode(signature)
 
@@ -72,8 +72,13 @@ def decode_token(token, secret):
         token = token.decode()
 
     bheader, bpayload, bsignature = token.split('.')
-    header = json.loads(bheader.decode())
-    payload = json.loads(bpayload.decode())
+    print(json.loads(utils.base64url_decode(bpayload).decode('utf-8')))
+
+    header = json.loads(utils.base64url_decode(bheader).decode('utf-8')).replace("'", '"')
+    header = json.loads(header)
+
+    payload = json.loads(utils.base64url_decode(bpayload).decode('utf-8')).replace("'", '"')
+    payload = json.loads(payload)
 
     # claim check
     payload_keys = list(payload.keys())
@@ -89,7 +94,12 @@ def decode_token(token, secret):
         raise exceptions.MissingRequiredClaimError('iat')
 
     # signature compare
-    if bsignature is not make_signature(bheader, bpayload, secret):
+    _header = utils.base64url_encode(json.dumps(str(header)).encode())
+    _payload = utils.base64url_encode(json.dumps(str(payload)).encode())
+    print(_payload)
+    if utils.base64url_decode(bsignature) is not make_signature(_header, _payload, secret):
+        print(str(utils.base64url_decode(bsignature)))
+        print(make_signature(_header, _payload, secret))
         raise exceptions.InvalidSignatureError('Invalid token signature')
 
     # expire check
