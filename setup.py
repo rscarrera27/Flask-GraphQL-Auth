@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='Flask-GraphQL-Auth',
-    version=0.2,
+    version=0.3,
     url="https://github.com/devArtoria/flask-graphql-auth",
     license='MIT',
     author='Lewis "devArtoria" Kim',
