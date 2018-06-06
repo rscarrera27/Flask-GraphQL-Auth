@@ -39,58 +39,43 @@ class GraphQLAuth(object):
         app.config.setdefault('JWT_USER_CLAIMS', 'user_claims')
 
     @staticmethod
-    def _create_access_token(identity, user_claims):
+    def _create_basic_token_data(identity, token_type):
+        uid = str(uuid4())
+        now = datetime.datetime.utcnow()
+
         token_data = {
-            current_app.config['JWT_IDENTITY_CLAIM']: identity,
-            'type': 'access'
+            "type": token_type,
+            "iat": now,
+            "nbf": now,
+            "jti": uid,
+            "exp": now + current_app.config['JWT_ACCESS_TOKEN_EXPIRES'],
+            current_app.config['JWT_IDENTITY_CLAIM']: identity
         }
+
+        return token_data
+
+    def _create_access_token(self, identity, user_claims):
+        token_data = self._create_basic_token_data(identity=identity,
+                                                   token_type='access')
 
         if user_claims:
-            token_data.update({current_app.config['JWT_USER_CLAIMS']: user_claims})
+            token_data.update({
+                current_app.config['JWT_USER_CLAIMS']: user_claims
+            })
 
-        uid = str(uuid4())
-        now = datetime.datetime.utcnow()
+        return jwt.encode(token_data,
+                          current_app.config['JWT_SECRET_KEY'],
+                          'HS256',
+                          json_encoder=current_app.json_encoder).decode('utf-8')
 
-        token_data.update({
-            "iat": now,
-            "nbf": now,
-            "jti": uid,
-            "exp": now + current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
-        })
-        print(token_data)
-        print(current_app.config['JWT_SECRET_KEY'])
+    def _create_refresh_token(self, identity):
+        token_data = self._create_basic_token_data(identity=identity,
+                                                   token_type='refresh')
 
         encoded_token = jwt.encode(token_data,
                                    current_app.config['JWT_SECRET_KEY'],
                                    'HS256',
                                    json_encoder=current_app.json_encoder).decode('utf-8')
 
-        return encoded_token
-
-    @staticmethod
-    def _create_refresh_token(identity):
-        token_data = {
-            current_app.config['JWT_IDENTITY_CLAIM']: identity,
-            'type': 'refresh'
-        }
-
-        uid = str(uuid4())
-        now = datetime.datetime.utcnow()
-
-        token_data.update({
-            "iat": now,
-            "nbf": now,
-            "jti": uid,
-            "exp": now + current_app.config['JWT_REFRESH_TOKEN_EXPIRES']
-        })
-
-        print(token_data)
-        print(current_app.config['JWT_SECRET_KEY'])
-        encoded_token = jwt.encode(token_data,
-                                   current_app.config['JWT_SECRET_KEY'],
-                                   'HS256',
-                                   json_encoder=current_app.json_encoder).decode('utf-8')
-
-        print(encoded_token)
         return encoded_token
 

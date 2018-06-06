@@ -9,7 +9,7 @@ def _get_jwt_manager():
                            "application before using this method")
 
 
-def create_access_token(identity, **user_claims):
+def create_access_token(identity, user_claims):
     """
     Create a new access token.
 
@@ -20,11 +20,14 @@ def create_access_token(identity, **user_claims):
 
     :return: An encoded access token
     """
+    if not isinstance(user_claims, dict):
+        raise TypeError("User claim should be dictionary type.")
+
     jwt_manager = _get_jwt_manager()
     return jwt_manager._create_access_token(identity, user_claims)
 
 
-def create_refresh_token(identity):
+def create_refresh_token(identity, user_claims):
     """
     Creates a new refresh token.
 
@@ -35,8 +38,11 @@ def create_refresh_token(identity):
 
     :return: An encoded refresh token
     """
+    if not isinstance(user_claims, dict):
+        raise TypeError("User claim should be dictionary type.")
+
     jwt_manager = _get_jwt_manager()
-    return jwt_manager._create_refresh_token(identity)
+    return jwt_manager._create_refresh_token(identity, user_claims)
 
 
 def get_raw_jwt():
