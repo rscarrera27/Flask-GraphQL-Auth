@@ -2,12 +2,13 @@ from setuptools import setup
 
 setup(
     name='Flask-GraphQL-Auth',
-    version=0.1,
+    version=0.2,
     url="https://github.com/devArtoria/flask-graphql-auth",
     license='MIT',
     author='Lewis "devArtoria" Kim',
     author_email='artoria@artoria.us',
-    description="JWT library for flask-graphql",
+    keywords=['jwt', 'auth', 'graphql'],
+    description="JWT library for Flask-GraphQL",
     packages=['flask_graphql_auth'],
     requires=[
         'Flask',
