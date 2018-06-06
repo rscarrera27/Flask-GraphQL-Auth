@@ -59,6 +59,9 @@ class GraphQLAuth(object):
                                                    token_type='access')
 
         if user_claims:
+            if not isinstance(user_claims, dict):
+                raise TypeError("User claim should be dictionary type.")
+
             token_data.update({
                 current_app.config['JWT_USER_CLAIMS']: user_claims
             })
@@ -68,9 +71,17 @@ class GraphQLAuth(object):
                           'HS256',
                           json_encoder=current_app.json_encoder).decode('utf-8')
 
-    def _create_refresh_token(self, identity):
+    def _create_refresh_token(self, identity, user_claims):
         token_data = self._create_basic_token_data(identity=identity,
                                                    token_type='refresh')
+
+        if user_claims:
+            if not isinstance(user_claims, dict):
+                raise TypeError("User claim should be dictionary type.")
+
+            token_data.update({
+                current_app.config['JWT_USER_CLAIMS']: user_claims
+            })
 
         encoded_token = jwt.encode(token_data,
                                    current_app.config['JWT_SECRET_KEY'],
