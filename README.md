@@ -1,8 +1,8 @@
-# Flask-GraphQL-Auth
+# Flask-GraphQL-Auth [![PyPI version](https://badge.fury.io/py/Flask-GraphQL-Auth.svg)](https://badge.fury.io/py/Flask-GraphQL-Auth)
 
 ## Installation
 ```sh
-pip install flask_graphql_auth
+pip install Flask-GraphQL-Auth
 ```
 
 ## usuage
