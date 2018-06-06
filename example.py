@@ -1,12 +1,3 @@
-# Flask-GraphQL-Auth
-
-## Installation
-```sh
-pip install flask_graphql_auth
-```
-
-## usuage
-```python
 from flask import Flask
 import graphene
 from flask_graphql_auth import *
@@ -81,7 +72,3 @@ app.add_url_rule(
 
 if __name__ == '__main__':
     app.run(debug=True)
-```
-
-## docs
-coming soon
