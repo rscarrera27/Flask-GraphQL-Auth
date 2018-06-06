@@ -15,6 +15,8 @@ def create_access_token(identity, **user_claims):
 
     :param identity: The identity of this token, which can be any data that is
                      json serializable. It can also be a python object
+    :param user_claims: User made claims that will be added to this token. it
+                        should be dictionary.
 
     :return: An encoded access token
     """
@@ -28,8 +30,10 @@ def create_refresh_token(identity):
 
     :param identity: The identity of this token, which can be any data that is
                      json serializable. It can also be a python object
+    :param user_claims: User made claims that will be added to this token. it
+                        should be dictionary.
 
-    :return: An encoded access token
+    :return: An encoded refresh token
     """
     jwt_manager = _get_jwt_manager()
     return jwt_manager._create_refresh_token(identity)

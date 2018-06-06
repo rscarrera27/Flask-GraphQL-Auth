@@ -28,7 +28,7 @@ class GraphQLAuth(object):
         """
         Sets the default configuration options used by this extension
         """
-        app.config.setdefault('JWT_TOKEN_ARGUMENT_NAME', "token")
+        app.config.setdefault('JWT_TOKEN_ARGUMENT_NAME', "token")  # Name of token argument in GraphQL request resolver
 
         app.config.setdefault('JWT_ACCESS_TOKEN_EXPIRES', datetime.timedelta(minutes=15))
         app.config.setdefault('JWT_REFRESH_TOKEN_EXPIRES', datetime.timedelta(days=30))
