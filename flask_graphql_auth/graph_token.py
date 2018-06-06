@@ -3,7 +3,8 @@ from uuid import uuid4
 from flask import current_app
 import datetime
 
-class GraphToken(object):
+
+class GraphQLAuth(object):
     def __init__(self, app=None):
         self.app = app
         if app is not None:
@@ -18,7 +19,7 @@ class GraphToken(object):
         # Save this so we can use it later in the extension
         if not hasattr(app, 'extensions'):  # pragma: no cover
             app.extensions = {}
-        app.extensions['flask-graphtoken'] = self
+        app.extensions['flask-graphql-auth'] = self
 
         self._set_default__configuration_options(app)
 

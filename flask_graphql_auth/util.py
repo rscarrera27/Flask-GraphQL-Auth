@@ -3,7 +3,7 @@ from flask import current_app, _app_ctx_stack as ctx_stack
 
 def _get_jwt_manager():
     try:
-        return current_app.extensions['flask-graphtoken']
+        return current_app.extensions['flask-graphql-auth']
     except KeyError:  # pragma: no cover
         raise RuntimeError("You must initialize a JWTManager with this flask "
                            "application before using this method")
