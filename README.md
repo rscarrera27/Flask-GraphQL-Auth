@@ -2,7 +2,7 @@
 
 ## Installation
 ```sh
-pip install flask_graphql_auth
+pip install Flask-GraphQL-Auth
 ```
 
 ## usuage
