@@ -18,6 +18,7 @@ auth = GraphQLAuth(app)
 app.config["JWT_SECRET_KEY"] = "something"  # change this!
 app.config["REFRESH_EXP_LENGTH"] = 30
 app.config["ACCESS_EXP_LENGTH"] = 10
+app.config["JWT_TOKEN_ARGUMENT_NAME"] = 'token'  # name of query and mutation's token argument
 
 
 class AuthMutation(graphene.Mutation):
