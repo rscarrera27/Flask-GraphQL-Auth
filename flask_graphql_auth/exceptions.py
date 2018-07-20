@@ -26,13 +26,6 @@ class NoAuthorizationError(JWTExtendedException):
     pass
 
 
-class CSRFError(JWTExtendedException):
-    """
-    An error with CSRF protection
-    """
-    pass
-
-
 class WrongTokenError(JWTExtendedException):
     """
     Error raised when attempting to use a refresh token to access an endpoint
