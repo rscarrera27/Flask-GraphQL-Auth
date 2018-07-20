@@ -32,7 +32,7 @@ class ProtectedMutation(graphene.Mutation):
     ok = graphene.Boolean()
 
     @jwt_required
-    def mutate(self, info, token):
+    def mutate(self, info):
         return AuthMutation(ok=True)
 
 
@@ -43,7 +43,7 @@ class RefreshMutation(graphene.Mutation):
     new_token = graphene.String()
 
     @jwt_refresh_token_required
-    def mutate(self, info, token):
+    def mutate(self, info):
         current_user = get_jwt_identity()
         return RefreshMutation(new_token=create_access_token(identity=current_user))
 
@@ -59,7 +59,7 @@ class Query(graphene.ObjectType):
                                 token=graphene.String())
 
     @jwt_required
-    def resolve_protected(self, info, token, message):
+    def resolve_protected(self, info, message):
         return message
 
 

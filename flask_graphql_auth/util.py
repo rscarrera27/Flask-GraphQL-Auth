@@ -50,7 +50,7 @@ def get_raw_jwt():
 
 def get_jwt_identity():
     """
-    In a protected endpoint, this will return the identity of the JWT that is
+    In a protected resolver or mutation, this will return the identity of the JWT that is
     accessing this endpoint. If no JWT is present,`None` is returned instead.
     """
     return get_raw_jwt().get(current_app.config['JWT_IDENTITY_CLAIM'], None)
@@ -58,7 +58,7 @@ def get_jwt_identity():
 
 def get_jwt_claims():
     """
-    In a protected endpoint, this will return the dictionary of custom claims
+    In a protected resolver or mutation, this will return the dictionary of custom claims
     in the JWT that is accessing the endpoint. If no custom user claims are
     present, an empty dict is returned instead.
     """

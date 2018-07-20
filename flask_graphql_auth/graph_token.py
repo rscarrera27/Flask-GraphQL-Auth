@@ -5,7 +5,22 @@ import datetime
 
 
 class GraphQLAuth(object):
+    """
+    An object used to hold JWT settings for the
+    Flask-GraphQL-Auth extension.
+
+    Instances of :class:`GraphQLAuth` are *not* bound to specific apps, so
+    you can create one in the main body of your code and then bind it
+    to your app in a factory function.
+    """
+
     def __init__(self, app=None):
+        """
+        Create the JWTManager instance. You can either pass a flask application in directly
+        here to register this extension with the flask app, or call init_app after creating
+        this object (in a factory pattern).
+        :param app: A flask application
+        """
         self.app = app
         if app is not None:
             self.init_app(app)

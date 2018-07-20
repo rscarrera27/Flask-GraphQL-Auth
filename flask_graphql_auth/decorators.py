@@ -33,6 +33,13 @@ def decode_jwt(encoded_token, secret, algorithm, identity_claim_key,
 
 
 def get_jwt_data(token, token_type):
+    """
+    Decodes encoded JWT token by using extension setting and validates token type
+
+    :param token: The encoded JWT string to decode
+    :param token_type: JWT type for type validation (access or refresh)
+    :return: Dictionary containing contents of the JWT
+    """
     jwt_data = decode_jwt(
         encoded_token=token,
         secret=current_app.config['JWT_SECRET_KEY'],
@@ -49,39 +56,53 @@ def get_jwt_data(token, token_type):
 
 
 def verify_jwt_in_argument(token):
+    """
+    Verify access token
+
+    :param token: The encoded access type JWT string to decode
+    :return: Dictionary containing contents of the JWT
+    """
     jwt_data = get_jwt_data(token, 'access')
     ctx_stack.top.jwt = jwt_data
 
 
 def verify_refresh_jwt_in_argument(token):
+    """
+    Verify refresh token
+
+    :param token: The encoded refresh type JWT string to decode
+    :return: Dictionary containing contents of the JWT
+    """
     jwt_data = get_jwt_data(token, 'refresh')
     ctx_stack.top.jwt = jwt_data
 
 
 def jwt_required(fn):
     """
-    A decorator to protect a Flask endpoint.
+    A decorator to protect a Graphene resolver and mutation.
 
-    If you decorate an endpoint with this, it will ensure that the requester
-    has a valid access token before allowing the endpoint to be called. This
+    If you decorate an resolver with this, it will ensure that the requester
+    has a valid access token before allowing the resolver or mutation to be called. This
     does not check the freshness of the access token.
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        verify_jwt_in_argument(kwargs[current_app.config['JWT_TOKEN_ARGUMENT_NAME']])
+        token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
+        verify_jwt_in_argument(token)
         return fn(*args, **kwargs)
     return wrapper
 
 
 def jwt_refresh_token_required(fn):
     """
-    A decorator to protect a Flask endpoint.
+    A decorator to protect a Graphene resolver and mutaion.
 
     If you decorate an endpoint with this, it will ensure that the requester
-    has a valid refresh token before allowing the endpoint to be called.
+    has a valid refresh token before allowing the resolver or mutation to be called.
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        verify_refresh_jwt_in_argument(kwargs[current_app.config['JWT_TOKEN_ARGUMENT_NAME']])
+        token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
+        verify_refresh_jwt_in_argument(token)
         return fn(*args, **kwargs)
     return wrapper
