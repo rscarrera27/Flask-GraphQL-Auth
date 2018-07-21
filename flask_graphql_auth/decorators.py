@@ -88,7 +88,11 @@ def jwt_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
-        verify_jwt_in_argument(token)
+        try:
+            verify_jwt_in_argument(token)
+        except Exception as e:
+            return GraphQLError(e)
+
         return fn(*args, **kwargs)
     return wrapper
 
@@ -103,6 +107,10 @@ def jwt_refresh_token_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
-        verify_refresh_jwt_in_argument(token)
+        try:
+            verify_refresh_jwt_in_argument(token)
+        except Exception as e:
+            return GraphQLError(e)
+
         return fn(*args, **kwargs)
     return wrapper
