@@ -1,3 +1,3 @@
 from .decorators import *
-from .graph_token import *
+from .main import *
 from .util import *
