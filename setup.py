@@ -11,8 +11,7 @@ setup(
     description="JWT library for Flask-GraphQL",
     packages=['flask_graphql_auth'],
     install_requires=[
-        'Flask',
-        'pyjwt',
-        'Flask_graphql'
+        'PyJWT',
+        'Flask_GraphQL'
     ]
 )
