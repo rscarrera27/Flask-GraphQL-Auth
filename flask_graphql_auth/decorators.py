@@ -1,5 +1,6 @@
 from flask import _app_ctx_stack as ctx_stack, current_app
 from .exceptions import *
+from graphql import GraphQLError
 from functools import wraps
 import jwt
 
