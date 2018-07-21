@@ -13,6 +13,6 @@ setup(
     requires=[
         'Flask',
         'pyjwt',
-        'Flask-GraphQL'
+        'Flask_graphql'
     ]
 )
