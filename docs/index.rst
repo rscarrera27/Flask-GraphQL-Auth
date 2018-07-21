@@ -15,6 +15,7 @@ Contents:
    basic_usuage
    userclaims
    apidoc
+   options
 
 
 
