@@ -12,7 +12,7 @@ Contents:
    :maxdepth: 2
 
    installation
-   basic_usuage
+   basic_usage
    userclaims
    apidoc
    options

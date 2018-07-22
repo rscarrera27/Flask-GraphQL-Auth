@@ -80,9 +80,9 @@ def verify_refresh_jwt_in_argument(token):
 
 def jwt_required(fn):
     """
-    A decorator to protect a Graphene resolver and mutation.
+    A decorator to protect a resolver and mutation.
 
-    If you decorate an resolver with this, it will ensure that the requester
+    If you decorate an resolver or mutation with this, it will ensure that the requester
     has a valid access token before allowing the resolver or mutation to be called. This
     does not check the freshness of the access token.
     """
@@ -91,6 +91,8 @@ def jwt_required(fn):
         token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
         try:
             verify_jwt_in_argument(token)
+        except jwt.ExpiredSignatureError as e:
+            return GraphQLError(str(RevokedTokenError()))
         except Exception as e:
             return GraphQLError(e)
 
@@ -100,9 +102,9 @@ def jwt_required(fn):
 
 def jwt_refresh_token_required(fn):
     """
-    A decorator to protect a Graphene resolver and mutaion.
+    A decorator to protect a resolver and mutation.
 
-    If you decorate an endpoint with this, it will ensure that the requester
+    If you decorate an resolver or mutation with this, it will ensure that the requester
     has a valid refresh token before allowing the resolver or mutation to be called.
     """
     @wraps(fn)
@@ -110,8 +112,10 @@ def jwt_refresh_token_required(fn):
         token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
         try:
             verify_refresh_jwt_in_argument(token)
+        except jwt.ExpiredSignatureError as e:
+            return GraphQLError(str(RevokedTokenError()))
         except Exception as e:
-            return GraphQLError(e)
+            return GraphQLError(str(e))
 
         return fn(*args, **kwargs)
     return wrapper

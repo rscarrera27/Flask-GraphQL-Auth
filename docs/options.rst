@@ -9,7 +9,7 @@ You can change many options for how this extension works via
 
   app.config[OPTION_NAME] = new_options
 
-General Options:
+Options:
 ~~~~~~~~~~~~~~~~
 
 .. tabularcolumns:: |p{6cm}|p{7cm}|

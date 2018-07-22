@@ -1,4 +1,4 @@
-Basic Usuage
+Basic Usage
 ===============
 
 .. literalinclude:: ../examples/basic.py

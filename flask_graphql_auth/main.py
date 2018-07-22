@@ -16,7 +16,7 @@ class GraphQLAuth(object):
 
     def __init__(self, app=None):
         """
-        Create the JWTManager instance. You can either pass a flask application in directly
+        Create the GraphQLAuth instance. You can either pass a flask application in directly
         here to register this extension with the flask app, or call init_app after creating
         this object (in a factory pattern).
         :param app: A flask application
