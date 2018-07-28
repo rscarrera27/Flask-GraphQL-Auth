@@ -31,7 +31,7 @@ class ProtectedMutation(graphene.Mutation):
     class Arguments(object):
         token = graphene.String()
 
-    message = graphene.Boolean()
+    message = graphene.String()
 
     @jwt_required
     def mutate(self, info):
