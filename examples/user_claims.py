@@ -31,11 +31,11 @@ class ProtectedMutation(graphene.Mutation):
     class Arguments(object):
         token = graphene.String()
 
-    ok = graphene.Boolean()
+    message = graphene.Boolean()
 
     @jwt_required
     def mutate(self, info):
-        return AuthMutation(ok=True)
+        return ProtectedMutation(message="Protected mutation works")
 
 
 class RefreshMutation(graphene.Mutation):
