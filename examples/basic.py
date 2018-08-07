@@ -29,11 +29,11 @@ class ProtectedMutation(graphene.Mutation):
     class Arguments(object):
         token = graphene.String()
 
-    ok = graphene.Boolean()
+    message = graphene.String()
 
     @jwt_required
     def mutate(self, info):
-        return AuthMutation(ok=True)
+        return ProtectedMutation(message="Protected mutation works")
 
 
 class RefreshMutation(graphene.Mutation):
@@ -60,7 +60,7 @@ class Query(graphene.ObjectType):
 
     @jwt_required
     def resolve_protected(self, info, message):
-        return message
+        return str(get_raw_jwt())
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
