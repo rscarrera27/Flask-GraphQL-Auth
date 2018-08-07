@@ -109,7 +109,7 @@ def jwt_refresh_token_required(fn):
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
+        token = kwargs.pop(current_app.config['JWT_REFRESH_TOKEN_ARGUMENT_NAME'])
         try:
             verify_refresh_jwt_in_argument(token)
         except jwt.ExpiredSignatureError as e:
