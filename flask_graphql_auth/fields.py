@@ -1,5 +1,5 @@
 import graphene
 
 
-class ResponseMessageField(graphene.ObjectType):
+class AuthInfoField(graphene.ObjectType):
     message = graphene.String()
