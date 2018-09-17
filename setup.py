@@ -12,6 +12,7 @@ setup(
     packages=['flask_graphql_auth'],
     install_requires=[
         'PyJWT',
-        'Flask_GraphQL'
+        'Flask_GraphQL',
+        'graphene'
     ]
 )
