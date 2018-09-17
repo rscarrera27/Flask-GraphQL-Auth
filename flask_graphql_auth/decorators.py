@@ -1,8 +1,10 @@
 from flask import _app_ctx_stack as ctx_stack, current_app
-from .exceptions import *
 from graphql import GraphQLError
 from functools import wraps
 import jwt
+
+from .exceptions import *
+from .fields import *
 
 
 def decode_jwt(encoded_token, secret, algorithm, identity_claim_key,
@@ -91,10 +93,8 @@ def jwt_required(fn):
         token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
         try:
             verify_jwt_in_argument(token)
-        except jwt.ExpiredSignatureError as e:
-            return GraphQLError(str(RevokedTokenError()))
         except Exception as e:
-            return GraphQLError(e)
+            return AuthInfoField(message=str(e))
 
         return fn(*args, **kwargs)
     return wrapper
@@ -112,10 +112,8 @@ def jwt_refresh_token_required(fn):
         token = kwargs.pop(current_app.config['JWT_REFRESH_TOKEN_ARGUMENT_NAME'])
         try:
             verify_refresh_jwt_in_argument(token)
-        except jwt.ExpiredSignatureError as e:
-            return GraphQLError(str(RevokedTokenError()))
         except Exception as e:
-            return GraphQLError(str(e))
+            return AuthInfoField(message=str(e))
 
         return fn(*args, **kwargs)
     return wrapper
