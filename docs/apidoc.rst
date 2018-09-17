@@ -28,3 +28,7 @@ Utilities
 .. autofunction:: get_jwt_claims
 .. autofunction:: decode_jwt
 .. autofunction:: get_jwt_data
+
+Fields
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autoclass:: AuthInfoField

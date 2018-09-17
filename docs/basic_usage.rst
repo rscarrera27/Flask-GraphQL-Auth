@@ -3,6 +3,9 @@ Basic Usage
 
 .. literalinclude:: ../examples/basic.py
 
+.. important:: To make protected query or mutation with auth decorators, we have to make union with
+               flask_graphql_auth.AuthInfoField to allow auth decorators return AuthInfoField when a problem occurs.
+
 To get token with auth mutation try this query::
 
    mutation {
