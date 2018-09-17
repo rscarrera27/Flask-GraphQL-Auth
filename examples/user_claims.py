@@ -13,6 +13,15 @@ app.config["ACCESS_EXP_LENGTH"] = 10
 user_claims = {"message": "VERI TAS LUX MEA"}
 
 
+class MessageField(graphene.ObjectType):
+    message = graphene.String()
+
+
+class ProtectedUnion(graphene.Union):
+    class Meta:
+        types = (MessageField, AuthInfoField)
+
+
 class AuthMutation(graphene.Mutation):
     class Arguments(object):
         username = graphene.String()
@@ -22,7 +31,6 @@ class AuthMutation(graphene.Mutation):
     refresh_token = graphene.String()
 
     def mutate(self, info, username, password):
-
         return AuthMutation(access_token=create_access_token(username, user_claims),
                             refresh_token=create_refresh_token(username, user_claims))
 
@@ -31,11 +39,11 @@ class ProtectedMutation(graphene.Mutation):
     class Arguments(object):
         token = graphene.String()
 
-    message = graphene.String()
+    message = graphene.Field(ProtectedUnion)
 
     @jwt_required
     def mutate(self, info):
-        return ProtectedMutation(message="Protected mutation works")
+        return ProtectedMutation(message=MessageField(message="Protected mutation works"))
 
 
 class RefreshMutation(graphene.Mutation):
@@ -47,7 +55,7 @@ class RefreshMutation(graphene.Mutation):
     @jwt_refresh_token_required
     def mutate(self, info):
         current_user = get_jwt_identity()
-        return RefreshMutation(new_token=create_access_token(identity=current_user))
+        return RefreshMutation(new_token=create_access_token(identity=current_user, user_claims=user_claims))
 
 
 class Mutation(graphene.ObjectType):
@@ -57,16 +65,16 @@ class Mutation(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
-    protected = graphene.String(message=graphene.String(),
-                                token=graphene.String())
+    protected = graphene.Field(type=ProtectedUnion,
+                               message=graphene.String(),
+                               token=graphene.String())
 
     @jwt_required
-    def resolve_protected(self, info):
-        return str(get_raw_jwt())
+    def resolve_protected(self, info, message):
+        return MessageField(message=str(get_raw_jwt()))
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
-
 app.add_url_rule(
             '/graphql',
             view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True)
