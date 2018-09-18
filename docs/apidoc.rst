@@ -13,10 +13,15 @@ Configuring Flask-GraphQL-Auth
    .. automethod:: __init__
    .. automethod:: init_app
 
-Protected resolver decorators
+Protected query decorators
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: jwt_required
-.. autofunction:: jwt_refresh_token_required
+.. autofunction:: query_jwt_required
+.. autofunction:: query_jwt_refresh_token_required
+
+Protected mutation decorators
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: mutation_jwt_required
+.. autofunction:: mutation_jwt_refresh_token_required
 
 
 Utilities
