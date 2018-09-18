@@ -79,16 +79,17 @@ def verify_refresh_jwt_in_argument(token):
     ctx_stack.top.jwt = jwt_data
 
 
-def jwt_required(fn):
+def query_jwt_required(fn):
     """
-    A decorator to protect a resolver and mutation.
+    A decorator to protect a query resolver.
 
-    If you decorate an resolver or mutation with this, it will ensure that the requester
-    has a valid access token before allowing the resolver or mutation to be called. This
+    If you decorate an resolver with this, it will ensure that the requester
+    has a valid access token before allowing the resolver to be called. This
     does not check the freshness of the access token.
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
+        print(args[0])
         token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
         try:
             verify_jwt_in_argument(token)
@@ -99,12 +100,12 @@ def jwt_required(fn):
     return wrapper
 
 
-def jwt_refresh_token_required(fn):
+def query_jwt_refresh_token_required(fn):
     """
-    A decorator to protect a resolver and mutation.
+    A decorator to protect a query resolver.
 
-    If you decorate an resolver or mutation with this, it will ensure that the requester
-    has a valid refresh token before allowing the resolver or mutation to be called.
+    If you decorate an query resolver with this, it will ensure that the requester
+    has a valid refresh token before allowing the resolver to be called.
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
@@ -116,3 +117,43 @@ def jwt_refresh_token_required(fn):
 
         return fn(*args, **kwargs)
     return wrapper
+
+
+def mutation_jwt_required(fn):
+    """
+    A decorator to protect a mutation.
+
+    If you decorate a mutation with this, it will ensure that the requester
+    has a valid access token before allowing the mutation to be called. This
+    does not check the freshness of the access token.
+    """
+    @wraps(fn)
+    def wrapper(cls, *args, **kwargs):
+        token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
+        try:
+            verify_jwt_in_argument(token)
+        except Exception as e:
+            return cls(AuthInfoField(message=str(e)))
+
+        return fn(cls, *args, **kwargs)
+    return wrapper
+
+
+def mutation_jwt_refresh_token_required(fn):
+    """
+    A decorator to protect a mutation.
+
+    If you decorate anmutation with this, it will ensure that the requester
+    has a valid refresh token before allowing the mutation to be called.
+    """
+    @wraps(fn)
+    def wrapper(cls, *args, **kwargs):
+        token = kwargs.pop(current_app.config['JWT_REFRESH_TOKEN_ARGUMENT_NAME'])
+        try:
+            verify_refresh_jwt_in_argument(token)
+        except Exception as e:
+            return cls(AuthInfoField(message=str(e)))
+
+        return fn(*args, **kwargs)
+    return wrapper
+
