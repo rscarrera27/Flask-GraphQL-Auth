@@ -18,3 +18,9 @@ pip install Flask-GraphQL-Auth
 ### Usage
 [View the documentation online](http://flask-graphql-auth.readthedocs.io/en/latest/)
 
+### We are finding contributors!
+- TODO
+  - test cases
+  - CI&coverage intergration
+ 
+ any PR&issues are welcome!!
