@@ -64,9 +64,17 @@ class GraphQLAuth(object):
             "iat": now,
             "nbf": now,
             "jti": uid,
-            "exp": now + current_app.config['JWT_ACCESS_TOKEN_EXPIRES'],
             current_app.config['JWT_IDENTITY_CLAIM']: identity
         }
+
+        if token_type == "refresh":
+            token_data.update({
+                "exp": current_app.config['JWT_REFRESH_TOKEN_EXPIRES']
+            })
+        else:
+            token_data.update({
+                "exp": current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
+            })
 
         return token_data
 
