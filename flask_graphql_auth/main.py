@@ -68,13 +68,17 @@ class GraphQLAuth(object):
         }
 
         if token_type == "refresh":
-            token_data.update({
-                "exp": current_app.config['JWT_REFRESH_TOKEN_EXPIRES']
-            })
+            exp = current_app.config['JWT_REFRESH_TOKEN_EXPIRES']
+            if isinstance(exp, int):
+                exp =  datetime.timedelta(days=exp)
         else:
-            token_data.update({
-                "exp": current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
-            })
+            exp = current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
+            if isinstance(exp, int):
+                exp =  datetime.timedelta(minutes=exp)
+
+        token_data.update({
+            "exp": now + exp
+        })
 
         return token_data
 
@@ -113,4 +117,3 @@ class GraphQLAuth(object):
                                    json_encoder=current_app.json_encoder).decode('utf-8')
 
         return encoded_token
-
