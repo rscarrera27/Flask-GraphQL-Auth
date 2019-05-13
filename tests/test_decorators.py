@@ -13,7 +13,7 @@ def test_query_jwt_required(flask_app: Flask):
 
     response = request(test_cli,
                        "query",
-                       f'protected(token:"{access_token}")',
+                       'protected(token:"{0}")'.format(access_token),
                        """... on AuthInfoField{
                                 message
                             }
@@ -32,7 +32,7 @@ def test_mutation_jwt_required(flask_app: Flask):
 
     response = request(test_cli,
                        "mutation",
-                       f'protected(token:"{access_token}")',
+                       'protected(token:"{0}")'.format(access_token),
                        """message {
                         ... on MessageField {
                                 message
@@ -53,7 +53,7 @@ def test_mutation_refresh_jwt_token_required(flask_app: Flask):
 
     response = request(test_cli,
                        "mutation",
-                       f'refresh(refreshToken:"{refresh_token}")',
+                       'refresh(refreshToken:"{0}")'.format(refresh_token),
                        """newToken""")
 
     with flask_app.test_request_context():
