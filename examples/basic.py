@@ -55,13 +55,13 @@ class ProtectedMutation(graphene.Mutation):
 
 class RefreshMutation(graphene.Mutation):
     class Arguments(object):
-        token = graphene.String()
+        refresh_token = graphene.String()
 
     new_token = graphene.String()
 
     @classmethod
     @mutation_jwt_refresh_token_required
-    def mutate(self, _, info):
+    def mutate(self, _,):
         current_user = get_jwt_identity()
         return RefreshMutation(new_token=create_access_token(identity=current_user))
 
@@ -74,12 +74,11 @@ class Mutation(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
     protected = graphene.Field(type=ProtectedUnion,
-                               message=graphene.String(),
                                token=graphene.String())
 
     @query_jwt_required
-    def resolve_protected(self, info, message):
-        return MessageField(message=str(get_raw_jwt()))
+    def resolve_protected(self, info):
+        return MessageField(message="Hello World!")
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
