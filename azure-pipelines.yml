@@ -26,9 +26,13 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements.txt
+    pip install codecov
   displayName: 'Install dependencies'
 
 - script: |
     pip install pytest pytest-azurepipelines
-    pytest
+    pytest --cov=./
+    codecov
   displayName: 'pytest'
+  env:
+    CODECOV_TOKEN: '$(codecov.token)'
