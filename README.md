@@ -4,6 +4,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/42a0235602c14a96883c0cd9393816ea)](https://www.codacy.com/app/NovemberOscar/Flask-GraphQL-Auth?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=callsign-viper/Flask-GraphQL-Auth&amp;utm_campaign=Badge_Grade) 
 [![Build Status](https://dev.azure.com/LewisKim/Flask-GraphQL-Auth/_apis/build/status/callsign-viper.Flask-GraphQL-Auth?branchName=master)](https://dev.azure.com/LewisKim/Flask-GraphQL-Auth/_build/latest?definitionId=2&branchName=master) 
 [![Downloads](https://pepy.tech/badge/flask-graphql-auth)](https://pepy.tech/project/flask-graphql-auth)
+[![DownloadsPerMonth](https://pepy.tech/badge/flask-graphql-auth/month)](https://pepy.tech/project/flask-graphql-auth/month)
 [![codecov](https://codecov.io/gh/callsign-viper/Flask-GraphQL-Auth/branch/master/graph/badge.svg)](https://codecov.io/gh/callsign-viper/Flask-GraphQL-Auth)
 
 ## What is Flask-GraphQL-Auth?
