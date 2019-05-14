@@ -35,4 +35,4 @@ steps:
     codecov
   displayName: 'pytest'
   env:
-    CODECOV_TOKEN: '$(codecov.token)'
+    CODECOV_TOKEN: $(codecov.token)
