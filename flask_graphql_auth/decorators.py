@@ -1,4 +1,4 @@
-from flask import _app_ctx_stack as ctx_stack, current_app
+from flask import _app_ctx_stack as ctx_stack, current_app, request
 from functools import wraps
 import jwt
 
@@ -79,6 +79,30 @@ def verify_refresh_jwt_in_argument(token):
     ctx_stack.top.jwt = jwt_data
 
 
+def _extract_token_value(request_params, request_headers, token_name="token"):
+    """
+    Extract token value from the request's params by specific name.
+
+    If token is not passed in request params then the value of
+    `Bearer token` from `Authorization` header is returned.
+
+    As a side effect, when token is found in request params
+    then it's removed from the dict.
+
+    :param request_params: Request params as dict
+    :param request_headers: Request headers as dict
+    :param token_name: The name of the JWT token param
+    :return: Token value as a string (empty string if token is not found)
+    """
+    if token_name in request_params:
+        return request_params.pop(token_name)
+    else:
+        authorization_header = request_headers.get("Authorization", "")
+        if authorization_header.lower().startswith("bearer"):
+            return authorization_header.split()[-1]
+    return ""
+
+
 def query_jwt_required(fn):
     """
     A decorator to protect a query resolver.
@@ -89,8 +113,11 @@ def query_jwt_required(fn):
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        print(args[0])
-        token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
+        token = _extract_token_value(
+            kwargs,
+            request.headers,
+            current_app.config['JWT_TOKEN_ARGUMENT_NAME']
+        )
         try:
             verify_jwt_in_argument(token)
         except Exception as e:
@@ -109,7 +136,11 @@ def query_jwt_refresh_token_required(fn):
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        token = kwargs.pop(current_app.config['JWT_REFRESH_TOKEN_ARGUMENT_NAME'])
+        token = _extract_token_value(
+            kwargs,
+            request.headers,
+            current_app.config['JWT_REFRESH_TOKEN_ARGUMENT_NAME']
+        )
         try:
             verify_refresh_jwt_in_argument(token)
         except Exception as e:
@@ -129,7 +160,11 @@ def mutation_jwt_required(fn):
     """
     @wraps(fn)
     def wrapper(cls, *args, **kwargs):
-        token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
+        token = _extract_token_value(
+            kwargs,
+            request.headers,
+            current_app.config['JWT_TOKEN_ARGUMENT_NAME']
+        )
         try:
             verify_jwt_in_argument(token)
         except Exception as e:
@@ -148,7 +183,11 @@ def mutation_jwt_refresh_token_required(fn):
     """
     @wraps(fn)
     def wrapper(cls, *args, **kwargs):
-        token = kwargs.pop(current_app.config['JWT_REFRESH_TOKEN_ARGUMENT_NAME'])
+        token = _extract_token_value(
+            kwargs,
+            request.headers,
+            current_app.config['JWT_REFRESH_TOKEN_ARGUMENT_NAME']
+        )
         try:
             verify_refresh_jwt_in_argument(token)
         except Exception as e:
@@ -156,4 +195,3 @@ def mutation_jwt_refresh_token_required(fn):
 
         return fn(*args, **kwargs)
     return wrapper
-
