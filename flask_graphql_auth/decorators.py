@@ -115,6 +115,13 @@ def query_jwt_required(fn):
     def wrapper(*args, **kwargs):
         print(args[0])
         token = kwargs.pop(current_app.config['JWT_TOKEN_ARGUMENT_NAME'])
+        try:
+            verify_jwt_in_argument(token)
+        except Exception as e:
+            return AuthInfoField(message=str(e))
+
+        return fn(*args, **kwargs)
+    return wrapper
 
 
 def query_header_jwt_required(fn):
@@ -181,6 +188,7 @@ def query_header_jwt_refresh_token_required(fn):
         return fn(*args, **kwargs)
     return wrapper
 
+
 def mutation_jwt_required(fn):
     """
     A decorator to protect a mutation.
@@ -228,7 +236,7 @@ def mutation_jwt_refresh_token_required(fn):
     """
     A decorator to protect a mutation.
 
-    If you decorate anmutation with this, it will ensure that the requester
+    If you decorate a mutation with this, it will ensure that the requester
     has a valid refresh token before allowing the mutation to be called.
     """
     @wraps(fn)
@@ -246,7 +254,7 @@ def mutation_header_jwt_refresh_token_required(fn):
     """
     A decorator to protect a mutation.
 
-    If you decorate anmutation with this, it will ensure that the requester
+    If you decorate a mutation with this, it will ensure that the requester
     has a valid refresh token before allowing the mutation to be called.
     """
     @wraps(fn)
