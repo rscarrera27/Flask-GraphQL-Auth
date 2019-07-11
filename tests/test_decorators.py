@@ -1,7 +1,7 @@
 from flask import Flask
 
 from flask_graphql_auth import create_access_token, create_refresh_token, get_jwt_data
-from flask_graphql_auth.decorators import _extract_token_value
+from flask_graphql_auth.decorators import _extract_header_token_value
 
 from tests.util import request
 
@@ -61,28 +61,13 @@ def test_mutation_refresh_jwt_token_required(flask_app: Flask):
         assert get_jwt_data(response['refresh']["newToken"], "access")["identity"] == "username"
 
 
-def test_extract_token_value_from_params(flask_app):
-    token_name = "token"
-    token_value = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
-    request_params = {token_name: token_value}
-    assert _extract_token_value(request_params, token_name) == token_value
-
-
-def test_extract_token_value_from_authorization_header(flask_app):
+def test_extract_header_token_value_from_authorization_header(flask_app):
     token_value = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
     headers = {
         "Authorization": "Bearer {}".format(token_value)
     }
-    assert _extract_token_value({}, headers) == token_value
+    assert _extract_header_token_value(flask_app, headers) == token_value
 
 
-def test_extract_token_value_empty(flask_app):
-    assert _extract_token_value({}, {}) == ""
-
-
-def test_extract_token_value_params_modified(flask_app):
-    token_name = "token"
-    token_value = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
-    request_params = {token_name: token_value}
-    _extract_token_value(request_params, {})
-    assert token_name not in request_params
+def test_extract_header_token_value_empty(flask_app):
+    assert _extract_header_token_value(flask_app, {}) == None
