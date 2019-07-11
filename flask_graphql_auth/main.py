@@ -54,6 +54,11 @@ class GraphQLAuth(object):
         app.config.setdefault('JWT_IDENTITY_CLAIM', 'identity')
         app.config.setdefault('JWT_USER_CLAIMS', 'user_claims')
 
+        # These settings are related to header authentication only
+        app.config.setdefault('JWT_HEADER_NAME', 'Authorization')
+        app.config.setdefault('JWT_HEADER_TOKEN_PREFIX', 'bearer')
+
+
     @staticmethod
     def _create_basic_token_data(identity, token_type):
         uid = str(uuid4())

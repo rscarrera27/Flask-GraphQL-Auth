@@ -79,28 +79,23 @@ def verify_refresh_jwt_in_argument(token):
     ctx_stack.top.jwt = jwt_data
 
 
-def _extract_token_value(request_params, request_headers, token_name="token"):
+def _extract_header_token_value(current_app, request_headers):
     """
-    Extract token value from the request's params by specific name.
+    Extract token value from the request headers.
 
-    If token is not passed in request params then the value of
-    `Bearer token` from `Authorization` header is returned.
+    It uses the token found in the header specified in the
+    JWT_HEADER_NAME configuration variable and requires
+    the token to have the prefix specified in the
+    JWT_HEADER_TOKEN_PREFIX variable
 
-    As a side effect, when token is found in request params
-    then it's removed from the dict.
-
-    :param request_params: Request params as dict
     :param request_headers: Request headers as dict
-    :param token_name: The name of the JWT token param
-    :return: Token value as a string (empty string if token is not found)
+    :return: Token value as a string (None if token is not found)
     """
-    if token_name in request_params:
-        return request_params.pop(token_name)
-    else:
-        authorization_header = request_headers.get("Authorization", "")
-        if authorization_header.lower().startswith("bearer"):
-            return authorization_header.split()[-1]
-    return ""
+    authorization_header = request_headers.get(current_app.config["JWT_HEADER_NAME"])
+    token_prefix = current_app.config['JWT_HEADER_TOKEN_PREFIX'].lower()
+    if authorization_header and authorization_header.lower().startswith(token_prefix):
+        return authorization_header.split()[-1]
+    return None
 
 
 def query_jwt_required(fn):
@@ -134,11 +129,7 @@ def query_header_jwt_required(fn):
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        token = _extract_token_value(
-            kwargs,
-            request.headers,
-            current_app.config['JWT_TOKEN_ARGUMENT_NAME']
-        )
+        token = _extract_header_token_value(request.headers)
         try:
             verify_jwt_in_argument(token)
         except Exception as e:
@@ -175,11 +166,7 @@ def query_header_jwt_refresh_token_required(fn):
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        token = _extract_token_value(
-            kwargs,
-            request.headers,
-            current_app.config['JWT_REFRESH_TOKEN_ARGUMENT_NAME']
-        )
+        token = _extract_header_token_value(request.headers)
         try:
             verify_refresh_jwt_in_argument(token)
         except Exception as e:
@@ -219,11 +206,7 @@ def mutation_header_jwt_required(fn):
     """
     @wraps(fn)
     def wrapper(cls, *args, **kwargs):
-        token = _extract_token_value(
-            kwargs,
-            request.headers,
-            current_app.config['JWT_TOKEN_ARGUMENT_NAME']
-        )
+        token = _extract_header_token_value(request.headers)
         try:
             verify_jwt_in_argument(token)
         except Exception as e:
@@ -259,11 +242,7 @@ def mutation_header_jwt_refresh_token_required(fn):
     """
     @wraps(fn)
     def wrapper(cls, *args, **kwargs):
-        token = _extract_token_value(
-            kwargs,
-            request.headers,
-            current_app.config['JWT_REFRESH_TOKEN_ARGUMENT_NAME']
-        )
+        token = _extract_header_token_value(request.headers)
         try:
             verify_refresh_jwt_in_argument(token)
         except Exception as e:
