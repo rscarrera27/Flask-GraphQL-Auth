@@ -79,7 +79,7 @@ def verify_refresh_jwt_in_argument(token):
     ctx_stack.top.jwt = jwt_data
 
 
-def _extract_header_token_value(current_app, request_headers):
+def _extract_header_token_value(request_headers):
     """
     Extract token value from the request headers.
 

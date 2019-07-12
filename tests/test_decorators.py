@@ -66,8 +66,10 @@ def test_extract_header_token_value_from_authorization_header(flask_app):
     headers = {
         "Authorization": "Bearer {}".format(token_value)
     }
-    assert _extract_header_token_value(flask_app, headers) == token_value
+    with flask_app.test_request_context():
+        assert _extract_header_token_value(headers) == token_value
 
 
 def test_extract_header_token_value_empty(flask_app):
-    assert _extract_header_token_value(flask_app, {}) == None
+    with flask_app.test_request_context():
+        assert _extract_header_token_value({}) == None
