@@ -1,6 +1,7 @@
 from flask import Flask
 
 from flask_graphql_auth import create_access_token, create_refresh_token, get_jwt_data
+from flask_graphql_auth.decorators import _extract_header_token_value
 
 from tests.util import request
 
@@ -60,3 +61,15 @@ def test_mutation_refresh_jwt_token_required(flask_app: Flask):
         assert get_jwt_data(response['refresh']["newToken"], "access")["identity"] == "username"
 
 
+def test_extract_header_token_value_from_authorization_header(flask_app):
+    token_value = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
+    headers = {
+        "Authorization": "Bearer {}".format(token_value)
+    }
+    with flask_app.test_request_context():
+        assert _extract_header_token_value(headers) == token_value
+
+
+def test_extract_header_token_value_empty(flask_app):
+    with flask_app.test_request_context():
+        assert _extract_header_token_value({}) == None

@@ -1,4 +1,4 @@
-from flask import _app_ctx_stack as ctx_stack, current_app
+from flask import _app_ctx_stack as ctx_stack, current_app, request
 from functools import wraps
 import jwt
 
@@ -79,6 +79,25 @@ def verify_refresh_jwt_in_argument(token):
     ctx_stack.top.jwt = jwt_data
 
 
+def _extract_header_token_value(request_headers):
+    """
+    Extract token value from the request headers.
+
+    It uses the token found in the header specified in the
+    JWT_HEADER_NAME configuration variable and requires
+    the token to have the prefix specified in the
+    JWT_HEADER_TOKEN_PREFIX variable
+
+    :param request_headers: Request headers as dict
+    :return: Token value as a string (None if token is not found)
+    """
+    authorization_header = request_headers.get(current_app.config["JWT_HEADER_NAME"])
+    token_prefix = current_app.config['JWT_HEADER_TOKEN_PREFIX'].lower()
+    if authorization_header and authorization_header.lower().startswith(token_prefix):
+        return authorization_header.split()[-1]
+    return None
+
+
 def query_jwt_required(fn):
     """
     A decorator to protect a query resolver.
@@ -100,6 +119,26 @@ def query_jwt_required(fn):
     return wrapper
 
 
+def query_header_jwt_required(fn):
+    """
+    A decorator to protect a query resolver.
+
+    If you decorate an resolver with this, it will ensure that the requester
+    has a valid access token before allowing the resolver to be called. This
+    does not check the freshness of the access token.
+    """
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        token = _extract_header_token_value(request.headers)
+        try:
+            verify_jwt_in_argument(token)
+        except Exception as e:
+            return AuthInfoField(message=str(e))
+
+        return fn(*args, **kwargs)
+    return wrapper
+
+
 def query_jwt_refresh_token_required(fn):
     """
     A decorator to protect a query resolver.
@@ -110,6 +149,24 @@ def query_jwt_refresh_token_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         token = kwargs.pop(current_app.config['JWT_REFRESH_TOKEN_ARGUMENT_NAME'])
+        try:
+            verify_refresh_jwt_in_argument(token)
+        except Exception as e:
+            return AuthInfoField(message=str(e))
+
+        return fn(*args, **kwargs)
+    return wrapper
+
+def query_header_jwt_refresh_token_required(fn):
+    """
+    A decorator to protect a query resolver.
+
+    If you decorate an query resolver with this, it will ensure that the requester
+    has a valid refresh token before allowing the resolver to be called.
+    """
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        token = _extract_header_token_value(request.headers)
         try:
             verify_refresh_jwt_in_argument(token)
         except Exception as e:
@@ -139,11 +196,30 @@ def mutation_jwt_required(fn):
     return wrapper
 
 
+def mutation_header_jwt_required(fn):
+    """
+    A decorator to protect a mutation.
+
+    If you decorate a mutation with this, it will ensure that the requester
+    has a valid access token before allowing the mutation to be called. This
+    does not check the freshness of the access token.
+    """
+    @wraps(fn)
+    def wrapper(cls, *args, **kwargs):
+        token = _extract_header_token_value(request.headers)
+        try:
+            verify_jwt_in_argument(token)
+        except Exception as e:
+            return cls(AuthInfoField(message=str(e)))
+
+        return fn(cls, *args, **kwargs)
+    return wrapper
+
 def mutation_jwt_refresh_token_required(fn):
     """
     A decorator to protect a mutation.
 
-    If you decorate anmutation with this, it will ensure that the requester
+    If you decorate a mutation with this, it will ensure that the requester
     has a valid refresh token before allowing the mutation to be called.
     """
     @wraps(fn)
@@ -157,3 +233,20 @@ def mutation_jwt_refresh_token_required(fn):
         return fn(*args, **kwargs)
     return wrapper
 
+def mutation_header_jwt_refresh_token_required(fn):
+    """
+    A decorator to protect a mutation.
+
+    If you decorate a mutation with this, it will ensure that the requester
+    has a valid refresh token before allowing the mutation to be called.
+    """
+    @wraps(fn)
+    def wrapper(cls, *args, **kwargs):
+        token = _extract_header_token_value(request.headers)
+        try:
+            verify_refresh_jwt_in_argument(token)
+        except Exception as e:
+            return cls(AuthInfoField(message=str(e)))
+
+        return fn(*args, **kwargs)
+    return wrapper
