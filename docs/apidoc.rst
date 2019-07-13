@@ -16,12 +16,17 @@ Configuring Flask-GraphQL-Auth
 Protected query decorators
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: query_jwt_required
+.. autofunction:: query_header_jwt_required
 .. autofunction:: query_jwt_refresh_token_required
+.. autofunction:: query_header_jwt_refresh_token_required
+
 
 Protected mutation decorators
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: mutation_jwt_required
+.. autofunction:: mutation_header_jwt_required
 .. autofunction:: mutation_jwt_refresh_token_required
+.. autofunction:: mutation_jwt_header_refresh_token_required
 
 
 Utilities

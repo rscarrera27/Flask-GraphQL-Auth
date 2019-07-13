@@ -14,6 +14,7 @@ Contents:
    installation
    basic_usage
    userclaims
+   jwt_in_header
    apidoc
    options
 
