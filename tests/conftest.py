@@ -20,8 +20,8 @@ def flask_app():
     schema = graphene.Schema(query=Query, mutation=Mutation)
 
     app.add_url_rule(
-        '/graphql',
-        view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True)
+        "/graphql",
+        view_func=GraphQLView.as_view("graphql", schema=schema, graphiql=True),
     )
 
     return app

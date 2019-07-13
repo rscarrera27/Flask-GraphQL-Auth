@@ -1,9 +1,16 @@
 from flask import Flask
 import graphene
-from flask_graphql_auth import (AuthInfoField, GraphQLAuth, get_jwt_identity,
-                                get_raw_jwt, create_access_token, create_refresh_token,
-                                query_jwt_required, mutation_jwt_refresh_token_required,
-                                mutation_jwt_required)
+from flask_graphql_auth import (
+    AuthInfoField,
+    GraphQLAuth,
+    get_jwt_identity,
+    get_raw_jwt,
+    create_access_token,
+    create_refresh_token,
+    query_jwt_required,
+    mutation_jwt_refresh_token_required,
+    mutation_jwt_required,
+)
 from flask_graphql import GraphQLView
 
 app = Flask(__name__)
@@ -37,8 +44,10 @@ class AuthMutation(graphene.Mutation):
 
     @classmethod
     def mutate(cls, _, info, username, password):
-        return AuthMutation(access_token=create_access_token(username),
-                            refresh_token=create_refresh_token(username))
+        return AuthMutation(
+            access_token=create_access_token(username),
+            refresh_token=create_refresh_token(username),
+        )
 
 
 class ProtectedMutation(graphene.Mutation):
@@ -50,7 +59,9 @@ class ProtectedMutation(graphene.Mutation):
     @classmethod
     @mutation_jwt_required
     def mutate(cls, _, info):
-        return ProtectedMutation(message=MessageField(message="Protected mutation works"))
+        return ProtectedMutation(
+            message=MessageField(message="Protected mutation works")
+        )
 
 
 class RefreshMutation(graphene.Mutation):
@@ -61,7 +72,7 @@ class RefreshMutation(graphene.Mutation):
 
     @classmethod
     @mutation_jwt_refresh_token_required
-    def mutate(self, _,):
+    def mutate(self, _):
         current_user = get_jwt_identity()
         return RefreshMutation(new_token=create_access_token(identity=current_user))
 
@@ -73,8 +84,7 @@ class Mutation(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
-    protected = graphene.Field(type=ProtectedUnion,
-                               token=graphene.String())
+    protected = graphene.Field(type=ProtectedUnion, token=graphene.String())
 
     @query_jwt_required
     def resolve_protected(self, info):
@@ -84,9 +94,8 @@ class Query(graphene.ObjectType):
 schema = graphene.Schema(query=Query, mutation=Mutation)
 
 app.add_url_rule(
-    '/graphql',
-    view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True)
+    "/graphql", view_func=GraphQLView.as_view("graphql", schema=schema, graphiql=True)
 )
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
