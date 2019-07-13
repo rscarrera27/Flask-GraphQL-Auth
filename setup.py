@@ -15,13 +15,15 @@ with open(os.path.join("flask_graphql_auth", "__init__.py"), "r") as f:
 
 setup(
     name="Flask-GraphQL-Auth",
-    version="1.2.0",
+    version=version,
     url="https://github.com/NovemberOscar/Flask-GraphQL-Auth",
     license="MIT",
     author="NovemberOscar",
     author_email="kim@seonghyeon.dev",
     keywords=["jwt", "auth", "graphql"],
     description="JWT library for Flask-GraphQL",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     packages=["flask_graphql_auth"],
     install_requires=["PyJWT", "Flask_GraphQL", "graphene", "flask"],
     classifiers=[
