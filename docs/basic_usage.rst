@@ -10,16 +10,37 @@ Basic Usage
 To get token with auth mutation try this query::
 
    mutation {
-      auth(password:<any word>, username: <any word>){
-      accessToken
-      refreshToken
+      auth(password: <any word>, username: <any word>) {
+         accessToken
+         refreshToken
       }
    }
 
+To refresh the token with refresh mutation try this one::
 
-To access a jwt_required protected query or mutation , all we have to do is send in the JWT in the query.
+   mutation {
+      refresh(refreshToken: <access token>) {
+         newToken
+      }
+   }
+
+To access a jwt_required protected query or mutation, all we have to do is send in the JWT in the query.
 By default, this is done with an mutation or query argument that looks like::
 
    {
-     protected(message:"hello", token:<access token>)
+      protected(token: <access token>) {
+         ... on MessageField {
+            message
+         }
+      }
+   }
+
+   mutation {
+      protected(token: <access token>) {
+         message {
+            ... on MessageField {
+               message
+            }
+         }
+      }
    }
