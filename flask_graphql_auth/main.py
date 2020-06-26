@@ -31,6 +31,9 @@ class GraphQLAuth(object):
 
         :param app: A flask application
         """
+        # Check jwt_secret_key is defined in app config
+        if not "JWT_SECRET_KEY" in app.config:
+          raise Exception('\'JWT_SECRET_KEY\' missing from app configuration.')
         # Save this so we can use it later in the extension
         if not hasattr(app, "extensions"):  # pragma: no cover
             app.extensions = {}
@@ -52,8 +55,6 @@ class GraphQLAuth(object):
             "JWT_ACCESS_TOKEN_EXPIRES", datetime.timedelta(minutes=15)
         )
         app.config.setdefault("JWT_REFRESH_TOKEN_EXPIRES", datetime.timedelta(days=30))
-
-        app.config.setdefault("JWT_SECRET_KEY", None)
 
         app.config.setdefault("JWT_IDENTITY_CLAIM", "identity")
         app.config.setdefault("JWT_USER_CLAIMS", "user_claims")
