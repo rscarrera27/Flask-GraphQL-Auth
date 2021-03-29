@@ -53,18 +53,28 @@ class GraphQLAuth(object):
         """
         Sets the default configuration options used by this extension
         """
+        # Name of token argument in GraphQL request resolver
         app.config.setdefault(
-            "JWT_TOKEN_ARGUMENT_NAME", "token"
-        )  # Name of token argument in GraphQL request resolver
+            "JWT_TOKEN_ARGUMENT_NAME",
+            "token"
+        )
         app.config.setdefault(
-            "JWT_REFRESH_TOKEN_ARGUMENT_NAME", "refresh_token")
+            "JWT_REFRESH_TOKEN_ARGUMENT_NAME",
+            "refresh_token"
+        )
 
         app.config.setdefault(
-            "JWT_ACCESS_TOKEN_EXPIRES", datetime.timedelta(minutes=15)
+            "JWT_ACCESS_TOKEN_EXPIRES",
+            datetime.timedelta(minutes=15)
         )
-        app.config.setdefault("JWT_SECRET_KEY", app.config.get("SECRET_KEY"))
-        app.config.setdefault("JWT_REFRESH_TOKEN_EXPIRES",
-                              datetime.timedelta(days=30))
+        app.config.setdefault(
+            "JWT_SECRET_KEY",
+            app.config.get("SECRET_KEY")
+        )
+        app.config.setdefault(
+            "JWT_REFRESH_TOKEN_EXPIRES",
+            datetime.timedelta(days=30)
+        )
 
         app.config.setdefault("JWT_IDENTITY_CLAIM", "identity")
         app.config.setdefault("JWT_USER_CLAIMS", "user_claims")
@@ -101,15 +111,17 @@ class GraphQLAuth(object):
 
     def _create_access_token(self, identity, user_claims):
         token_data = self._create_basic_token_data(
-            identity=identity, token_type="access"
+            identity=identity,
+            token_type="access"
         )
 
         if user_claims:
             if not isinstance(user_claims, dict):
                 raise TypeError("User claim should be dictionary type.")
 
-            token_data.update(
-                {current_app.config["JWT_USER_CLAIMS"]: user_claims})
+            token_data.update({
+                current_app.config["JWT_USER_CLAIMS"]: user_claims
+            })
 
         return jwt.encode(
             token_data,
@@ -120,15 +132,17 @@ class GraphQLAuth(object):
 
     def _create_refresh_token(self, identity, user_claims):
         token_data = self._create_basic_token_data(
-            identity=identity, token_type="refresh"
+            identity=identity,
+            token_type="refresh"
         )
 
         if user_claims:
             if not isinstance(user_claims, dict):
                 raise TypeError("User claim should be dictionary type.")
 
-            token_data.update(
-                {current_app.config["JWT_USER_CLAIMS"]: user_claims})
+            token_data.update({
+                current_app.config["JWT_USER_CLAIMS"]: user_claims
+            })
 
         encoded_token = jwt.encode(
             token_data,
