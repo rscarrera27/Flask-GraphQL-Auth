@@ -32,9 +32,11 @@ class GraphQLAuth(object):
         :param app: A flask application
         """
         # Check jwt_secret_key or secret_key is defined in app config
-        secret_key = app.config.get("JWT_SECRET_KEY") or app.config.get("SECRET_KEY")
+        secret_key = self._get_secret_key(app)
         if not secret_key:
-          raise Exception('\'JWT_SECRET_KEY\' missing from app configuration.')
+            raise Exception(
+                '"JWT_SECRET_KEY" missing from app configuration.'
+            )
         # Save this so we can use it later in the extension
         if not hasattr(app, "extensions"):  # pragma: no cover
             app.extensions = {}
@@ -43,20 +45,36 @@ class GraphQLAuth(object):
         self._set_default__configuration_options(app)
 
     @staticmethod
+    def _get_secret_key(app):
+        return app.config.get("JWT_SECRET_KEY") or app.config.get("SECRET_KEY")
+
+    @staticmethod
     def _set_default__configuration_options(app):
         """
         Sets the default configuration options used by this extension
         """
+        # Name of token argument in GraphQL request resolver
         app.config.setdefault(
-            "JWT_TOKEN_ARGUMENT_NAME", "token"
-        )  # Name of token argument in GraphQL request resolver
-        app.config.setdefault("JWT_REFRESH_TOKEN_ARGUMENT_NAME", "refresh_token")
+            "JWT_TOKEN_ARGUMENT_NAME",
+            "token"
+        )
+        app.config.setdefault(
+            "JWT_REFRESH_TOKEN_ARGUMENT_NAME",
+            "refresh_token"
+        )
 
         app.config.setdefault(
-            "JWT_ACCESS_TOKEN_EXPIRES", datetime.timedelta(minutes=15)
+            "JWT_ACCESS_TOKEN_EXPIRES",
+            datetime.timedelta(minutes=15)
         )
-        app.config.setdefault("JWT_SECRET_KEY", app.config.get("SECRET_KEY"))
-        app.config.setdefault("JWT_REFRESH_TOKEN_EXPIRES", datetime.timedelta(days=30))
+        app.config.setdefault(
+            "JWT_SECRET_KEY",
+            app.config.get("SECRET_KEY")
+        )
+        app.config.setdefault(
+            "JWT_REFRESH_TOKEN_EXPIRES",
+            datetime.timedelta(days=30)
+        )
 
         app.config.setdefault("JWT_IDENTITY_CLAIM", "identity")
         app.config.setdefault("JWT_USER_CLAIMS", "user_claims")
@@ -93,38 +111,44 @@ class GraphQLAuth(object):
 
     def _create_access_token(self, identity, user_claims):
         token_data = self._create_basic_token_data(
-            identity=identity, token_type="access"
+            identity=identity,
+            token_type="access"
         )
 
         if user_claims:
             if not isinstance(user_claims, dict):
                 raise TypeError("User claim should be dictionary type.")
 
-            token_data.update({current_app.config["JWT_USER_CLAIMS"]: user_claims})
+            token_data.update({
+                current_app.config["JWT_USER_CLAIMS"]: user_claims
+            })
 
         return jwt.encode(
             token_data,
             current_app.config["JWT_SECRET_KEY"],
             "HS256",
             json_encoder=current_app.json_encoder,
-        ).decode("utf-8")
+        )
 
     def _create_refresh_token(self, identity, user_claims):
         token_data = self._create_basic_token_data(
-            identity=identity, token_type="refresh"
+            identity=identity,
+            token_type="refresh"
         )
 
         if user_claims:
             if not isinstance(user_claims, dict):
                 raise TypeError("User claim should be dictionary type.")
 
-            token_data.update({current_app.config["JWT_USER_CLAIMS"]: user_claims})
+            token_data.update({
+                current_app.config["JWT_USER_CLAIMS"]: user_claims
+            })
 
         encoded_token = jwt.encode(
             token_data,
             current_app.config["JWT_SECRET_KEY"],
             "HS256",
             json_encoder=current_app.json_encoder,
-        ).decode("utf-8")
+        )
 
         return encoded_token
