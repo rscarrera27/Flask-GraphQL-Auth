@@ -16,8 +16,8 @@ app = Flask(__name__)
 auth = GraphQLAuth(app)
 
 app.config["JWT_SECRET_KEY"] = "something"  # change this!
-app.config["REFRESH_EXP_LENGTH"] = 30
-app.config["ACCESS_EXP_LENGTH"] = 10
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 10  # 10 minutes
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = 30  # 30 days
 
 
 class MessageField(graphene.ObjectType):
