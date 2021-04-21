@@ -48,9 +48,13 @@ class AuthMutation(graphene.Mutation):
     def mutate(cls, _, info, username, password):
         return AuthMutation(
             access_token=create_access_token(
-                username, user_claims=user_claims),
+                username,
+                user_claims=user_claims,
+            ),
             refresh_token=create_refresh_token(
-                username, user_claims=user_claims),
+                username,
+                user_claims=user_claims,
+            ),
         )
 
 
@@ -80,7 +84,8 @@ class RefreshMutation(graphene.Mutation):
         current_user = get_jwt_identity()
         return RefreshMutation(
             new_token=create_access_token(
-                identity=current_user, user_claims=user_claims
+                identity=current_user,
+                user_claims=user_claims,
             )
         )
 
@@ -93,7 +98,9 @@ class Mutation(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
     protected = graphene.Field(
-        type=ProtectedUnion, message=graphene.String(), token=graphene.String()
+        type=ProtectedUnion,
+        message=graphene.String(),
+        token=graphene.String(),
     )
 
     @query_jwt_required
@@ -104,7 +111,8 @@ class Query(graphene.ObjectType):
 schema = graphene.Schema(query=Query, mutation=Mutation)
 
 app.add_url_rule(
-    "/graphql", view_func=GraphQLView.as_view("graphql", schema=schema, graphiql=True)
+    "/graphql",
+    view_func=GraphQLView.as_view("graphql", schema=schema, graphiql=True),
 )
 
 if __name__ == "__main__":
