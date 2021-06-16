@@ -17,8 +17,8 @@ app = Flask(__name__)
 auth = GraphQLAuth(app)
 
 app.config["JWT_SECRET_KEY"] = "something"  # change this!
-app.config["REFRESH_EXP_LENGTH"] = 30
-app.config["ACCESS_EXP_LENGTH"] = 10
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 10  # 10 minutes
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = 30  # 30 days
 
 user_claims = {"message": "VERI TAS LUX MEA"}
 
@@ -47,8 +47,14 @@ class AuthMutation(graphene.Mutation):
     @classmethod
     def mutate(cls, _, info, username, password):
         return AuthMutation(
-            access_token=create_access_token(username, user_claims=user_claims),
-            refresh_token=create_refresh_token(username, user_claims=user_claims),
+            access_token=create_access_token(
+                username,
+                user_claims=user_claims,
+            ),
+            refresh_token=create_refresh_token(
+                username,
+                user_claims=user_claims,
+            ),
         )
 
 
@@ -74,11 +80,12 @@ class RefreshMutation(graphene.Mutation):
 
     @classmethod
     @mutation_jwt_refresh_token_required
-    def mutate(self, _, info):
+    def mutate(cls, _, info):
         current_user = get_jwt_identity()
         return RefreshMutation(
             new_token=create_access_token(
-                identity=current_user, user_claims=user_claims
+                identity=current_user,
+                user_claims=user_claims,
             )
         )
 
@@ -91,7 +98,9 @@ class Mutation(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
     protected = graphene.Field(
-        type=ProtectedUnion, message=graphene.String(), token=graphene.String()
+        type=ProtectedUnion,
+        message=graphene.String(),
+        token=graphene.String(),
     )
 
     @query_jwt_required
@@ -102,7 +111,8 @@ class Query(graphene.ObjectType):
 schema = graphene.Schema(query=Query, mutation=Mutation)
 
 app.add_url_rule(
-    "/graphql", view_func=GraphQLView.as_view("graphql", schema=schema, graphiql=True)
+    "/graphql",
+    view_func=GraphQLView.as_view("graphql", schema=schema, graphiql=True),
 )
 
 if __name__ == "__main__":
