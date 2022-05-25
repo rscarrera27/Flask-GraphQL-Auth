@@ -25,7 +25,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=["flask_graphql_auth"],
-    install_requires=["PyJWT==2.0.1", "Flask-GraphQL", "graphene", "flask"],
+    install_requires=["PyJWT==2.4.0", "Flask-GraphQL", "graphene", "flask"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Environment :: Web Environment",
