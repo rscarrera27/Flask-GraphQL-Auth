@@ -11,14 +11,15 @@ from flask_graphql_auth import (
     mutation_jwt_refresh_token_required,
     mutation_jwt_required,
 )
-from flask_graphql import GraphQLView
+from graphql_server.flask.graphqlview import GraphQLView
 
 app = Flask(__name__)
-auth = GraphQLAuth(app)
 
 app.config["JWT_SECRET_KEY"] = "something"  # change this!
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 10  # 10 minutes
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = 30  # 30 days
+
+auth = GraphQLAuth(app)
 
 
 class MessageField(graphene.ObjectType):
@@ -86,7 +87,7 @@ class Mutation(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
-    protected = graphene.Field(type=ProtectedUnion, token=graphene.String())
+    protected = graphene.Field(type_=ProtectedUnion, token=graphene.String())
 
     @query_jwt_required
     def resolve_protected(self, info):
