@@ -15,7 +15,7 @@ with open(os.path.join("flask_graphql_auth", "__init__.py"), "r") as f:
 install_requires = [
     "flask",
     "graphene",
-    "PyJWT==2.0.1"
+    "PyJWT==2.4.0"
 ]
 
 tests_requires = [
