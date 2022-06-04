@@ -10,7 +10,7 @@ from flask_graphql_auth import (
     mutation_header_jwt_refresh_token_required,
     mutation_header_jwt_required,
 )
-from flask_graphql import GraphQLView
+from graphql_server.flask.graphqlview import GraphQLView
 
 app = Flask(__name__)
 auth = GraphQLAuth(app)
