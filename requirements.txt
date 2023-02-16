@@ -14,4 +14,4 @@ promise==2.3
 PyJWT==2.0.1
 Rx==1.6.1
 six==1.15.0
-Werkzeug==1.0.1
+Werkzeug==2.2.3
